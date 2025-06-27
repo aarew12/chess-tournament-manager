@@ -16,9 +16,19 @@ public class Tournament {
         this.status = TournamentStatus.PLANNED;
     }
 
-    public static Tournament create(String name, String description,
-                                    LocalDateTime startDateTime) {
+    public static Tournament create(String name, String description, LocalDateTime startDateTime) {
+        validateTournamentData(name, startDateTime);
         return new Tournament(name, description, startDateTime);
+    }
+
+    private static void validateTournamentData(String name, LocalDateTime startDateTime) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tournament name cannot be null or empty");
+        }
+
+        if (startDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Tournament start date must be in the future");
+        }
     }
 
     public String getName() {
