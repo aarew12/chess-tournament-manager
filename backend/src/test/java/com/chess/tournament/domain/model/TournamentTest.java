@@ -55,4 +55,25 @@ class TournamentTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Tournament start date must be in the future");
     }
+
+    @Test
+    @DisplayName("Should register player successfully")
+    void shouldRegisterPlayerSuccessfully() {
+        // Given
+        Tournament tournament = Tournament.create(
+                "Test Tournament",
+                "Description",
+                LocalDateTime.now().plusDays(7)
+        );
+        PlayerId playerId = PlayerId.generate();
+        String playerName = "Magnus Carlsen";
+        int rating = 2800;
+
+        // When
+        tournament.registerPlayer(playerId, playerName, rating);
+
+        // Then
+        assertThat(tournament.getRegisteredPlayers()).hasSize(1);
+        assertThat(tournament.isPlayerRegistered(playerId)).isTrue();
+    }
 }

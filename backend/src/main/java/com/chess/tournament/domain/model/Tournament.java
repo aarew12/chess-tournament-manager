@@ -1,6 +1,10 @@
 package com.chess.tournament.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Tournament {
 
@@ -9,6 +13,7 @@ public class Tournament {
     private final String description;
     private final LocalDateTime startDateTime;
     private final TournamentStatus status;
+    private final Map<PlayerId, TournamentPlayer> registeredPlayers;
 
     private Tournament(String name, String description, LocalDateTime startDateTime) {
         this.id = TournamentId.generate();
@@ -16,6 +21,7 @@ public class Tournament {
         this.description = description;
         this.startDateTime = startDateTime;
         this.status = TournamentStatus.PLANNED;
+        this.registeredPlayers = new HashMap<>();
     }
 
     public static Tournament create(String name, String description, LocalDateTime startDateTime) {
@@ -31,6 +37,19 @@ public class Tournament {
         if (startDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Tournament start date must be in the future");
         }
+    }
+
+    public void registerPlayer(PlayerId playerId, String playerName, int rating) {
+        var player = new TournamentPlayer(playerId, playerName, rating);
+        registeredPlayers.put(playerId, player);
+    }
+
+    public Collection<TournamentPlayer> getRegisteredPlayers() {
+        return Collections.unmodifiableCollection(registeredPlayers.values());
+    }
+
+    public boolean isPlayerRegistered(PlayerId playerId) {
+        return registeredPlayers.containsKey(playerId);
     }
 
     public TournamentId getId() {
