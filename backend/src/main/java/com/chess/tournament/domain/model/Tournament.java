@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 
 public class Tournament {
 
+    private final TournamentId id;
     private final String name;
     private final String description;
     private final LocalDateTime startDateTime;
-    private TournamentStatus status;
+    private final TournamentStatus status;
 
     private Tournament(String name, String description, LocalDateTime startDateTime) {
+        this.id = TournamentId.generate();
         this.name = name;
         this.description = description;
         this.startDateTime = startDateTime;
@@ -29,6 +31,10 @@ public class Tournament {
         if (startDateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Tournament start date must be in the future");
         }
+    }
+
+    public TournamentId getId() {
+        return id;
     }
 
     public String getName() {
