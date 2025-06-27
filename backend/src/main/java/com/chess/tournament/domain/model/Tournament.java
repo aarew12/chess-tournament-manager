@@ -40,8 +40,16 @@ public class Tournament {
     }
 
     public void registerPlayer(PlayerId playerId, String playerName, int rating) {
+        validatePlayerRegistration(playerId);
+
         var player = new TournamentPlayer(playerId, playerName, rating);
         registeredPlayers.put(playerId, player);
+    }
+
+    private void validatePlayerRegistration(PlayerId playerId) {
+        if (registeredPlayers.containsKey(playerId)) {
+            throw new IllegalStateException("Player is already registered for this tournament");
+        }
     }
 
     public Collection<TournamentPlayer> getRegisteredPlayers() {
