@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Tournament Domain Entity")
 class TournamentTest {
@@ -34,15 +35,9 @@ class TournamentTest {
     void shouldNotCreateWhenNameIsNullOrEmpty() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(7);
 
-        assertThatThrownBy(() ->
-                Tournament.create(null, "Description", futureDate))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Tournament name cannot be null or empty");
+        assertThatThrownBy(() -> Tournament.create(null, "Description", futureDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be null or empty");
 
-        assertThatThrownBy(() ->
-                Tournament.create("", "Description", futureDate))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Tournament name cannot be null or empty");
+        assertThatThrownBy(() -> Tournament.create("", "Description", futureDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be null or empty");
     }
 
     @Test
@@ -50,21 +45,14 @@ class TournamentTest {
     void shouldNotCreateWhenStartDateIsInThePast() {
         LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
 
-        assertThatThrownBy(() ->
-                Tournament.create("Valid Name", "Description", pastDate))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Tournament start date must be in the future");
+        assertThatThrownBy(() -> Tournament.create("Valid Name", "Description", pastDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament start date must be in the future");
     }
 
     @Test
     @DisplayName("Should register player successfully")
     void shouldRegisterPlayerSuccessfully() {
         // Given
-        Tournament tournament = Tournament.create(
-                "Test Tournament",
-                "Description",
-                LocalDateTime.now().plusDays(7)
-        );
+        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
         PlayerId playerId = PlayerId.generate();
         String playerName = "Magnus Carlsen";
         int rating = 2800;
@@ -75,5 +63,20 @@ class TournamentTest {
         // Then
         assertThat(tournament.getRegisteredPlayers()).hasSize(1);
         assertThat(tournament.isPlayerRegistered(playerId)).isTrue();
+    }
+
+    @Test
+    @DisplayName("Should not to register same player twice")
+    void shouldNotToRegisterSamePlayerTwice() {
+        // Given
+        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        PlayerId playerId = PlayerId.generate();
+        String playerName = "Magnus Carlsen";
+        int rating = 2800;
+
+        tournament.registerPlayer(playerId, playerName, rating);
+
+        // When // Then
+        assertThatThrownBy(() -> tournament.registerPlayer(playerId, playerName, rating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
     }
 }
