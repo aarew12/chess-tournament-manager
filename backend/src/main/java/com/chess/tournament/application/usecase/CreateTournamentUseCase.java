@@ -12,7 +12,7 @@ public class CreateTournamentUseCase {
     }
 
     public String execute(CreateTournamentCommand command) {
-        var tournament = Tournament.create(command.name(), command.description(), command.startDateTime());
+        var tournament = Tournament.create(command.name(), command.description(), command.startDate(), command.type());
 
         tournamentRepository.save(tournament);
 

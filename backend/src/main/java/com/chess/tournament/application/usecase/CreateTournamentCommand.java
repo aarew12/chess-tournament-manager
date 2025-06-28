@@ -1,6 +1,8 @@
 package com.chess.tournament.application.usecase;
 
-import java.time.LocalDateTime;
+import com.chess.tournament.domain.model.TournamentType;
 
-public record CreateTournamentCommand(String name, String description, LocalDateTime startDateTime) {
+import java.time.LocalDate;
+
+public record CreateTournamentCommand(String name, String description, LocalDate startDate, TournamentType type) {
 }

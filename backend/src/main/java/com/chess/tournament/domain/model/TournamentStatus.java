@@ -15,4 +15,8 @@ public enum TournamentStatus {
     public String getDescription() {
         return description;
     }
+
+    public boolean canStart() {
+        return PLANNED == this;
+    }
 }

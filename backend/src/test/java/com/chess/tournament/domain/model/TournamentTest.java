@@ -3,7 +3,7 @@ package com.chess.tournament.domain.model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,42 +17,51 @@ class TournamentTest {
         // Given
         String name = "Spring Chess Championship";
         String description = "Annual chess tournament";
-        LocalDateTime startDateTime = LocalDateTime.now().plusDays(7);
+        LocalDate startDate = LocalDate.now().plusDays(7);
 
         // When
-        Tournament tournament = Tournament.create(name, description, startDateTime);
+        Tournament tournament = Tournament.create(name, description, startDate, TournamentType.ROUND_ROBIN);
 
         // Then
         assertThat(tournament).isNotNull();
         assertThat(tournament.getName()).isEqualTo(name);
         assertThat(tournament.getDescription()).isEqualTo(description);
-        assertThat(tournament.getStartDateTime()).isEqualTo(startDateTime);
+        assertThat(tournament.getStartDate()).isEqualTo(startDate);
         assertThat(tournament.getStatus()).isEqualTo(TournamentStatus.PLANNED);
     }
 
     @Test
     @DisplayName("Should not create when name is null or empty")
     void shouldNotCreateWhenNameIsNullOrEmpty() {
-        LocalDateTime futureDate = LocalDateTime.now().plusDays(7);
+        LocalDate futureDate = LocalDate.now().plusDays(7);
 
-        assertThatThrownBy(() -> Tournament.create(null, "Description", futureDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be null or empty");
+        assertThatThrownBy(() -> Tournament.create(null, "Description", futureDate, TournamentType.ROUND_ROBIN)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be empty");
 
-        assertThatThrownBy(() -> Tournament.create("", "Description", futureDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be null or empty");
+        assertThatThrownBy(() -> Tournament.create("", "Description", futureDate, TournamentType.ROUND_ROBIN)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament name cannot be empty");
     }
 
     @Test
     @DisplayName("Should not create when start date is in the past")
     void shouldNotCreateWhenStartDateIsInThePast() {
-        LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
+        LocalDate pastDate = LocalDate.now().minusDays(1);
 
-        assertThatThrownBy(() -> Tournament.create("Valid Name", "Description", pastDate)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament start date must be in the future");
+        assertThatThrownBy(() -> Tournament.create("Valid Name", "Description", pastDate, TournamentType.ROUND_ROBIN)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament start date must be in the future");
+    }
+
+    @Test
+    @DisplayName("Should not create when type is null")
+    void shouldNotCreateWhenTypeIsNull() {
+        LocalDate futureDate = LocalDate.now().plusDays(7);
+
+        assertThatThrownBy(() -> Tournament.create("Valid Name", "Description", futureDate, null)).isInstanceOf(IllegalArgumentException.class).hasMessage("Tournament type cannot be empty");
     }
 
     @Test
     @DisplayName("Should register player successfully")
     void shouldRegisterPlayerSuccessfully() {
         // Given
-        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        LocalDate futureDate = LocalDate.now().plusDays(7);
+        Tournament tournament = Tournament.create("Test Tournament", "Description", futureDate, TournamentType.ROUND_ROBIN);
         PlayerId playerId = PlayerId.generate();
         String playerName = "Magnus Carlsen";
         int rating = 2800;
@@ -69,7 +78,8 @@ class TournamentTest {
     @DisplayName("Should not to register player with same id twice")
     void shouldNotToRegisterPlayerWithSameIdTwice() {
         // Given
-        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        LocalDate futureDate = LocalDate.now().plusDays(7);
+        Tournament tournament = Tournament.create("Test Tournament", "Description", futureDate, TournamentType.ROUND_ROBIN);
         PlayerId playerId = PlayerId.generate();
         String playerName = "Magnus Carlsen";
         int rating = 2800;
@@ -84,7 +94,8 @@ class TournamentTest {
     @DisplayName("Should not to register player with same name and ranking twice")
     void shouldNotToRegisterPlayerWithSameNameAndRankingTwice() {
         // Given
-        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        LocalDate futureDate = LocalDate.now().plusDays(7);
+        Tournament tournament = Tournament.create("Test Tournament", "Description", futureDate, TournamentType.ROUND_ROBIN);
         PlayerId playerId = PlayerId.generate();
         PlayerId otherPlayerId = PlayerId.generate();
         String playerName = "Magnus Carlsen";
@@ -100,7 +111,8 @@ class TournamentTest {
     @DisplayName("Should register player with same name but different ranking")
     void shouldRegisterPlayerWithSameNameButDifferentRanking() {
         // Given
-        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        LocalDate futureDate = LocalDate.now().plusDays(7);
+        Tournament tournament = Tournament.create("Test Tournament", "Description", futureDate, TournamentType.ROUND_ROBIN);
         PlayerId playerId = PlayerId.generate();
         PlayerId otherPlayerId = PlayerId.generate();
         String playerName = "Magnus Carlsen";

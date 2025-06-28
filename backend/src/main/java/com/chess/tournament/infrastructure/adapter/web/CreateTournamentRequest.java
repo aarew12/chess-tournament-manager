@@ -1,4 +1,8 @@
 package com.chess.tournament.infrastructure.adapter.web;
 
-public record CreateTournamentRequest(String name, String description, java.time.LocalDateTime startDateTime) {
+import com.chess.tournament.domain.model.TournamentType;
+
+import java.time.LocalDate;
+
+public record CreateTournamentRequest(String name, String description, LocalDate startDate, TournamentType type) {
 }

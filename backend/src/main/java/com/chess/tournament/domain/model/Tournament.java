@@ -1,41 +1,46 @@
 package com.chess.tournament.domain.model;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 public class Tournament {
 
     private final TournamentId id;
     private final String name;
     private final String description;
-    private final LocalDateTime startDateTime;
-    private final TournamentStatus status;
-    private final Map<PlayerId, TournamentPlayer> registeredPlayers;
+    private final LocalDate startDate;
+    private final TournamentType type;
+    private final SequencedMap<PlayerId, TournamentPlayer> registeredPlayers;
+    private TournamentStatus status;
+    private int currentRound;
 
-    private Tournament(String name, String description, LocalDateTime startDateTime) {
+    private Tournament(String name, String description, LocalDate startDate, TournamentType type) {
         this.id = TournamentId.generate();
         this.name = name;
         this.description = description;
-        this.startDateTime = startDateTime;
+        this.startDate = startDate;
         this.status = TournamentStatus.PLANNED;
-        this.registeredPlayers = new HashMap<>();
+        this.type = type;
+        this.registeredPlayers = new LinkedHashMap<>();
+        this.currentRound = 0;
     }
 
-    public static Tournament create(String name, String description, LocalDateTime startDateTime) {
-        validateTournamentData(name, startDateTime);
-        return new Tournament(name, description, startDateTime);
+    public static Tournament create(String name, String description, LocalDate startDate, TournamentType type) {
+        validateTournamentData(name, startDate, type);
+        return new Tournament(name, description, startDate, type);
     }
 
-    private static void validateTournamentData(String name, LocalDateTime startDateTime) {
+    private static void validateTournamentData(String name, LocalDate startDate, TournamentType type) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tournament name cannot be null or empty");
+            throw new IllegalArgumentException("Tournament name cannot be empty");
         }
 
-        if (startDateTime.isBefore(LocalDateTime.now())) {
+        if (startDate.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Tournament start date must be in the future");
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException("Tournament type cannot be empty");
         }
     }
 
@@ -58,6 +63,18 @@ public class Tournament {
         }
     }
 
+    public void start() {
+        if (!status.canStart()) {
+            throw new IllegalStateException("Tournament cannot be started in current status: " + status);
+        }
+
+        if (registeredPlayers.size() < 2) {
+            throw new IllegalStateException("Cannot start tournament with less than 2 players");
+        }
+
+        this.status = TournamentStatus.IN_PROGRESS;
+    }
+
     public Collection<TournamentPlayer> getRegisteredPlayers() {
         return Collections.unmodifiableCollection(registeredPlayers.values());
     }
@@ -78,11 +95,19 @@ public class Tournament {
         return description;
     }
 
-    public LocalDateTime getStartDateTime() {
-        return startDateTime;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
     public TournamentStatus getStatus() {
         return status;
+    }
+
+    public TournamentType getType() {
+        return type;
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
     }
 }
