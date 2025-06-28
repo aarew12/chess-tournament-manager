@@ -1,5 +1,6 @@
 package com.chess.tournament.application.usecase;
 
+import com.chess.tournament.application.exception.TournamentNotFoundException;
 import com.chess.tournament.domain.model.Pairing;
 import com.chess.tournament.domain.model.TournamentId;
 import com.chess.tournament.domain.port.TournamentRepository;
@@ -19,7 +20,7 @@ public class GeneratePairingsUseCase {
 
     public List<Pairing> execute(String tournamentIdString, int round) {
         TournamentId tournamentId = TournamentId.from(tournamentIdString);
-        var tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+        var tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TournamentNotFoundException(tournamentIdString));
 
         PairingStrategy strategy = switch (tournament.getType()) {
             case ROUND_ROBIN -> new RoundRobinStrategy();

@@ -4,19 +4,17 @@ import com.chess.tournament.application.exception.TournamentNotFoundException;
 import com.chess.tournament.domain.model.TournamentId;
 import com.chess.tournament.domain.port.TournamentRepository;
 
-public class StartTournamentUseCase {
+public class GetTournamentUseCase {
 
     private final TournamentRepository tournamentRepository;
 
-    public StartTournamentUseCase(TournamentRepository tournamentRepository) {
+    public GetTournamentUseCase(TournamentRepository tournamentRepository) {
         this.tournamentRepository = tournamentRepository;
     }
 
-    public void execute(String tournamentIdString) {
+    public TournamentDetails execute(String tournamentIdString) {
         TournamentId tournamentId = TournamentId.from(tournamentIdString);
         var tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TournamentNotFoundException(tournamentIdString));
-
-        tournament.start();
-        tournamentRepository.save(tournament);
+        return new TournamentDetails(tournament.getId().value().toString(), tournament.getName(), tournament.getDescription(), tournament.getType(), tournament.getStatus());
     }
 }

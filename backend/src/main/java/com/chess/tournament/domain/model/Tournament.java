@@ -1,5 +1,7 @@
 package com.chess.tournament.domain.model;
 
+import com.chess.tournament.application.exception.PlayerAlreadyRegisteredException;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -45,21 +47,21 @@ public class Tournament {
     }
 
     public void registerPlayer(PlayerId playerId, String playerName, int rating) {
-        validatePlayerRegistration(playerId, playerName, rating);
+        validatePlayerRegistration(playerId, playerName);
 
         var player = new TournamentPlayer(playerId, playerName, rating);
         registeredPlayers.put(playerId, player);
     }
 
-    private void validatePlayerRegistration(PlayerId playerId, String playerName, int rating) {
+    private void validatePlayerRegistration(PlayerId playerId, String playerName) {
         if (registeredPlayers.containsKey(playerId)) {
-            throw new IllegalStateException("Player is already registered for this tournament");
+            throw new PlayerAlreadyRegisteredException(playerName);
         }
 
-        boolean playerExists = registeredPlayers.values().stream().anyMatch(player -> player.name().equals(playerName) && player.rating() == rating);
+        boolean playerExists = registeredPlayers.values().stream().anyMatch(player -> player.name().equals(playerName));
 
         if (playerExists) {
-            throw new IllegalStateException("Player is already registered for this tournament");
+            throw new PlayerAlreadyRegisteredException(playerName);
         }
     }
 

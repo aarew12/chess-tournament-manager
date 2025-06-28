@@ -1,5 +1,6 @@
 package com.chess.tournament.domain.model;
 
+import com.chess.tournament.application.exception.PlayerAlreadyRegisteredException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -87,7 +88,7 @@ class TournamentTest {
         tournament.registerPlayer(playerId, playerName, rating);
 
         // When // Then
-        assertThatThrownBy(() -> tournament.registerPlayer(playerId, playerName, rating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
+        assertThatThrownBy(() -> tournament.registerPlayer(playerId, playerName, rating)).isInstanceOf(PlayerAlreadyRegisteredException.class).hasMessage("Player with name 'Magnus Carlsen' is already registered for this tournament");
     }
 
     @Test
@@ -104,7 +105,7 @@ class TournamentTest {
         tournament.registerPlayer(playerId, playerName, rating);
 
         // When // Then
-        assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, rating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
+        assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, rating)).isInstanceOf(PlayerAlreadyRegisteredException.class).hasMessage("Player with name 'Magnus Carlsen' is already registered for this tournament");
     }
 
     @Test
@@ -122,6 +123,6 @@ class TournamentTest {
         tournament.registerPlayer(playerId, playerName, rating);
 
         // When // Then
-        assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, otherRating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
+        assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, otherRating)).isInstanceOf(PlayerAlreadyRegisteredException.class).hasMessage("Player with name 'Magnus Carlsen' is already registered for this tournament");
     }
 }

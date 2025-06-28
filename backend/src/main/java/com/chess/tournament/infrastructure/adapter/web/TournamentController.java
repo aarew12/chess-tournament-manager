@@ -18,13 +18,15 @@ public class TournamentController {
     private final StartTournamentUseCase startTournamentUseCase;
     private final GetTournamentPlayersUseCase getTournamentPlayersUseCase;
     private final GeneratePairingsUseCase generatePairingsUseCase;
+    private final GetTournamentUseCase getTournamentUseCase;
 
-    public TournamentController(RegisterPlayerUseCase registerPlayerUseCase, CreateTournamentUseCase createTournamentUseCase, StartTournamentUseCase startTournamentUseCase, GetTournamentPlayersUseCase getTournamentPlayersUseCase, GeneratePairingsUseCase generatePairingsUseCase) {
+    public TournamentController(RegisterPlayerUseCase registerPlayerUseCase, CreateTournamentUseCase createTournamentUseCase, StartTournamentUseCase startTournamentUseCase, GetTournamentPlayersUseCase getTournamentPlayersUseCase, GeneratePairingsUseCase generatePairingsUseCase, GetTournamentUseCase getTournamentUseCase) {
         this.registerPlayerUseCase = registerPlayerUseCase;
         this.createTournamentUseCase = createTournamentUseCase;
         this.startTournamentUseCase = startTournamentUseCase;
         this.getTournamentPlayersUseCase = getTournamentPlayersUseCase;
         this.generatePairingsUseCase = generatePairingsUseCase;
+        this.getTournamentUseCase = getTournamentUseCase;
     }
 
     @PostMapping
@@ -61,5 +63,11 @@ public class TournamentController {
     public ResponseEntity<List<Pairing>> getPairings(@PathVariable String tournamentId, @RequestParam(defaultValue = "1") int round) {
         var pairings = generatePairingsUseCase.execute(tournamentId, round);
         return ResponseEntity.ok(pairings);
+    }
+
+    @GetMapping("/{tournamentId}")
+    public ResponseEntity<TournamentDetails> getTournamentDetails(@PathVariable String tournamentId) {
+        var tournament = getTournamentUseCase.execute(tournamentId);
+        return ResponseEntity.ok(tournament);
     }
 }

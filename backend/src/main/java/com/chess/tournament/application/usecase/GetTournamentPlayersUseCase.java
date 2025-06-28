@@ -1,5 +1,6 @@
 package com.chess.tournament.application.usecase;
 
+import com.chess.tournament.application.exception.TournamentNotFoundException;
 import com.chess.tournament.domain.model.TournamentId;
 import com.chess.tournament.domain.model.TournamentPlayer;
 import com.chess.tournament.domain.port.TournamentRepository;
@@ -16,7 +17,7 @@ public class GetTournamentPlayersUseCase {
 
     public Collection<TournamentPlayer> execute(String tournamentIdString) {
         TournamentId tournamentId = TournamentId.from(tournamentIdString);
-        var tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+        var tournament = tournamentRepository.findById(tournamentId).orElseThrow(() -> new TournamentNotFoundException(tournamentIdString));
 
         return tournament.getRegisteredPlayers();
     }

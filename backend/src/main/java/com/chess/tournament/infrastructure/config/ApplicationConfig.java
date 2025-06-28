@@ -32,4 +32,9 @@ public class ApplicationConfig {
     public GeneratePairingsUseCase generatePairingsUseCase(TournamentRepository repository) {
         return new GeneratePairingsUseCase(repository);
     }
+
+    @Bean
+    public GetTournamentUseCase getTournament(TournamentRepository repository) {
+        return new GetTournamentUseCase(repository);
+    }
 }
