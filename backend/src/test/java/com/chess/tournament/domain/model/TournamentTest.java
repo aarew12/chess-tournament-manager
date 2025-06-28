@@ -95,4 +95,21 @@ class TournamentTest {
         // When // Then
         assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, rating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
     }
+
+    @Test
+    @DisplayName("Should register player with same name but different ranking")
+    void shouldRegisterPlayerWithSameNameButDifferentRanking() {
+        // Given
+        Tournament tournament = Tournament.create("Test Tournament", "Description", LocalDateTime.now().plusDays(7));
+        PlayerId playerId = PlayerId.generate();
+        PlayerId otherPlayerId = PlayerId.generate();
+        String playerName = "Magnus Carlsen";
+        int rating = 2800;
+        int otherRating = 2800;
+
+        tournament.registerPlayer(playerId, playerName, rating);
+
+        // When // Then
+        assertThatThrownBy(() -> tournament.registerPlayer(otherPlayerId, playerName, otherRating)).isInstanceOf(IllegalStateException.class).hasMessage("Player is already registered for this tournament");
+    }
 }
