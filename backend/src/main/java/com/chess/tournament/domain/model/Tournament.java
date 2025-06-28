@@ -40,14 +40,20 @@ public class Tournament {
     }
 
     public void registerPlayer(PlayerId playerId, String playerName, int rating) {
-        validatePlayerRegistration(playerId);
+        validatePlayerRegistration(playerId, playerName, rating);
 
         var player = new TournamentPlayer(playerId, playerName, rating);
         registeredPlayers.put(playerId, player);
     }
 
-    private void validatePlayerRegistration(PlayerId playerId) {
+    private void validatePlayerRegistration(PlayerId playerId, String playerName, int rating) {
         if (registeredPlayers.containsKey(playerId)) {
+            throw new IllegalStateException("Player is already registered for this tournament");
+        }
+
+        boolean playerExists = registeredPlayers.values().stream().anyMatch(player -> player.name().equals(playerName) && player.rating() == rating);
+
+        if (playerExists) {
             throw new IllegalStateException("Player is already registered for this tournament");
         }
     }
